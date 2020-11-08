@@ -8,7 +8,7 @@ The web app consists of a Flask backend and a Javascript frontend that serve pre
 
 The frontend looks like this:
 
-![Calculator](no-shows-calculator.png)
+![Calculator](no-shows-calculator2.png)
 
 The API will return a prediction:
 
