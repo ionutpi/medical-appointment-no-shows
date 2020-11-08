@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+      <meta charset="utf-8" />
+      <title>No show probability calculator</title>
+      <link rel='icon' href='favicon.ico' type='image/x-icon' />
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <style>
+            .checked {
+                  color: orange;
+            }
+
+            .empty {
+                  color: blanchedalmond;
+            }
+
+            .overall {
+                  background-color: rgb(248, 248, 248);
+                  width:60%;
+                  margin-top: 10px;
+            }
+
+            .midbut {
+                  border-radius: 0;
+            }
+
+            .flt {
+                  height: auto;
+                  max-height: 800px;
+                  overflow-x: hidden;
+            }
+      </style>
+</head>
+
+<body ng-app="medApp" ng-cloak>
+      <div class="container overall pt-4 pb-4" >
+
+            <div id="filters" class="container" ng-controller="filterController">
+                  <div class="row">
+                  <div class="form-group col-md-4">
+                        <form id="myForm"> 
+                              <div class="form-group col-md">
+                                    <label for="inputState">Age</label>
+                                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="38" ng-model="age">
+                                    
+                              </div>
+
+                              <div class="form-group col-md">
+                                    <label for="inputState">Days since scheduled</label>
+                                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="21" ng-model="days">
+                                    
+                              </div>
+
+                              <div class="form-group col-md">
+                                    <label for="inputState">Previous missed appointments</label>
+                                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="0"  ng-model="pnshap">
+                                  
+                              </div>
+
+                              <div class="form-group col-md">
+                                    <label for="inputState">Previous total appointments</label>
+                                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="0"  ng-model="ptotap">
+                        
+                              </div>
+
+                              <div class="form-group col-md">
+                                    <label for="inputState">SMS sent</label>
+                                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="0"  ng-model="sms">
+                        
+                              </div>
+
+
+                              <div class="row justify-content-between">
+                                    <div class="col-md-6">
+                                          <button type="reset" id="rst" class="btn btn-warning btn-block">Reset</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                          <button type="button" class="btn btn-success btn-block"
+                                                ng-click="getPred()">Calculate
+                                          </button>
+                                    </div>
+                              </div>
+                        </form>
+                  </div>
+                  <div class="container col-md-4">
+                        <div class="jumbotron" style="margin-top: 64px;">
+                              <h1>Probability:</h1>
+                              <h3 id="proba">N/A</h3>
+                        </div>
+                  </div>
+                  </div>
+            </div>
+
+      </div>
+
+</body>
+
+<script>
+
+      var Endpoint = 'http://localhost:8080';
+      var Api = Endpoint + '/calc';
+
+      var app = angular.module('medApp', []);
+
+      var gridScope;
+
+      var filterScope;
+
+      $("#rst").click(function(){
+            $("#myForm")[0].reset();
+
+            document.getElementById("proba").innerText = 'N/A'
+      });
+
+      app.controller('filterController', function ($scope) {
+            $scope.age = 38;
+            $scope.days = 0;
+            $scope.pnshap = 0;
+            $scope.ptotap = 0;
+            $scope.sms = 0;
+            console.log($scope.age)
+
+
+            $scope.getPred =function() {
+                  /*console.log(age)*/
+                  var ApiParam = Api +
+                        '?age=' + $scope.age +
+                        '&days=' + $scope.days +
+                        '&pnshap=' + $scope.pnshap +
+                        '&ptotap=' + $scope.ptotap +
+                        '&sms=' + $scope.sms;
+
+                  $.ajax({
+                        url: ApiParam,
+                        type: 'GET',
+                        success: function (response) {
+                              document.getElementById("proba").innerText = (response.proba* 100).toFixed(4) + '%';
+                        },
+                        error: function (response) {
+                              console.log("could not retrieve result");
+                        }
+                  });
+            }
+
+
+      });
+
+
+
+</script>
+
+
+</html>
