@@ -12,7 +12,7 @@ The frontend looks like this:
 
 The API will return a prediction:
 
-![API](no-shows-api.png )
+![API](no-shows-api.png)
 
 Also included is a Dockerfile to download the required libraries and run the web app.
 
